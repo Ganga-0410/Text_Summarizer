@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="header">Summary</h1>
+        {% if summary|length <= 1000 %}
+            <div class="pagination">
+                <div class="page" id="page0">
+                    {{ summary }}
+                </div>
+            </div>
+        {% else %}
+            {% set pages = summary.split('\n') %}
+            <div class="pagination">
+                <div class="page" id="page0">
+                    {{ pages[0] }}
+                </div>
+                <div class="page" id="page1">
+                    {{ pages[1] }}
+                </div>
+            </div>
+            <div class="pagination-buttons">
+                <button class="button" id="prevButton" disabled>&lt;</button>
+                <button class="button" id="nextButton" {% if pages|length == 1 %}disabled{% endif %}>&gt;</button>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        var currentPage = 0;
+        var pages = document.querySelectorAll('.page');
+
+        function showPage(pageNumber) {
+            if (pageNumber < 0 || pageNumber >= pages.length) {
+                return;
+            }
+
+            pages[currentPage].style.display = 'none';
+            pages[pageNumber].style.display = 'block';
+
+            currentPage = pageNumber;
+
+            var prevButton = document.getElementById('prevButton');
+            var nextButton = document.getElementById('nextButton');
+
+            if (pageNumber === 0) {
+                prevButton.disabled = true;
+            } else {
+                prevButton.disabled = false;
+            }
+
+            if (pageNumber === pages.length - 1) {
+                nextButton.disabled = true;
+            } else {
+                nextButton.disabled = false;
+            }
+        }
+
+        showPage(0);
+
+        document.getElementById('prevButton').addEventListener('click', function() {
+            showPage(currentPage - 1);
+        });
+
+        document.getElementById('nextButton').addEventListener('click', function() {
+            showPage(currentPage + 1);
+        });
+    </script>
+</body>
+</html>
